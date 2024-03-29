@@ -2,52 +2,61 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "classes.h"
 
 
+#define SIZE 50
 
 
-
-struct book_st{
+typedef struct {
 	char title[100]; 
 	int bookNum;	  
-	char author[100];	  
-};
-
+	char author[100];
+  int publishedYear;
+  int language; //1=korean, 2=english;
+}book_st;
 
 
 int main(void) {
-	int no;	// amount of channels
-	struct book_st* clist[SIZE]; // channel list
-	int menu; // menu number 
+	int no;	
+	struct book_st* clist[SIZE]; 
+  int menu;
 
 	srand(time(0));
 	no = loadData(clist);
+  printf("> Load %d classes.\n", no);
 
 	while(1)
 	{
 		// Print menu
-		printf("\n[1]모든 책 목록 \n[2]대여 가능한 책 목록 \n[3]빌리기 \n[4]반납하기 \n[5]자신이 대출중인 책 목록 보기 \n[6]책 검색 \n[7]책 추가 \n[8]책 삭제 \n[9]책 정보 수정 \n[0]Exit\n> Enter a menu >> ");
+		printf("\n[1]모든 책 목록 \n[2]책 추가 \n[3]책 삭제 \n[4]책 정보 수정 \n[5]책 검색 \n[6]변경사항 저장 \n[0]Exit\n> Enter a menu >> ");
 		scanf("%d",&menu);	
 
-	return 0;
-}
-}
-
-
-int loadData(struct book_st* c[]){
-	int no=0;
-	FILE* file;
-
-	file=fopen("channels.txt", "r");
-	while(!feof(file)){
-		struct st_channel* t = (struct st_channel*)malloc(sizeof(struct st_channel));
-		int r=fscanf(file, "%s %d", t->name, &(t->count));
-		if(r<2) break;
-		t->level = findLevel(t->count);
-		c[no] = t;
-		no++;
+		if(menu==1){
+			printBookList(clist, no); // Print all list of channels
+		}
+		else if(menu==2){
+			no = addBook(clist, no);	// Print statistics of each level
+		}
+		else if(menu==3){
+			no = deleteBook(clist, no); // Pick up random channels
+		}
+		else if(menu==4){
+			updateBook(clist, no);	// Search a channel
+		}
+		else if(menu==5){
+			searchBook(clist, no); // Add a channel
+		}
+		else if(menu==6){
+			save(clist, no); // Modify a channel
+		}
+		else if(menu==0){
+      printf("이용해 주셔서 감사합니다.\n");
+			break;
+		}
+		else {
+			printf("잘못된 입력입니다.\n");
+		}
 	}
-	fclose(file);
-	printf("> %d channels are loaded.\n", no);
-	return no;
+	return 0;
 }
